@@ -1,0 +1,29 @@
+{
+  "name": "unicodetiles.ts",
+  "version": "2.1.1",
+  "description": "UnicodeTiles.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "directories": {
+    "doc": "docs",
+    "example": "examples",
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/triplepointfive/unicodetiles.js.git"
+  },
+  "keywords": [],
+  "author": "Ilya Smelkov",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/triplepointfive/unicodetiles.js/issues"
+  },
+  "homepage": "https://github.com/triplepointfive/unicodetiles.js#readme",
+  "devDependencies": {
+    "typescript": "^2.8.3"
+  }
+}
