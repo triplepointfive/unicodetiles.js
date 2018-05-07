@@ -4,7 +4,7 @@ const VERTEX_SHADER = `
 attribute vec2 position;
 attribute vec2 texCoord;
 attribute vec3 color;
-attribute vec3 bgColor;,
+attribute vec3 bgColor;
 attribute float charIndex;
 uniform vec2 uResolution;
 uniform vec2 uTileCounts;
