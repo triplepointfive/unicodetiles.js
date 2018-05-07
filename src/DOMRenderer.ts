@@ -23,7 +23,7 @@ class DOMRenderer implements Renderer {
       this.spans[j].push(document.createElement('br'))
       view.elem.appendChild(this.spans[j][view.w])
     }
-    setTimeout(this.updateStyle, 0)
+    setTimeout(() => this.updateStyle(), 0)
   }
 
   public render(): void {

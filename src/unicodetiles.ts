@@ -139,9 +139,9 @@ export class Tile {
 /// CSSCLASS - The CSS class name used for the tile engine element.
 /// NULLTILE - The tile used as placeholder for empty tile.
 export const VERSION = '2.1'
-const NULLCHAR = ' '
-const CSSCLASS = 'unicodetiles'
-const NULLTILE = new Tile(' ')
+export const NULLCHAR = ' '
+export const CSSCLASS = 'unicodetiles'
+export const NULLTILE = new Tile(NULLCHAR)
 
 export interface Renderer {
   updateStyle(s?: any): void
@@ -332,7 +332,7 @@ export class Viewport {
 
 /// Class: Engine
 /// The tile engine itself.
-class Engine {
+export class Engine {
   private refreshCache: boolean = true
   private cacheEnabled: boolean = false
   private transitionTimer?: number
