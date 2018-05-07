@@ -1,2 +1,4 @@
 export { Tile, Viewport, VERSION } from './unicodetiles'
-export { DOMRenderer } from './DOMRenderer'
+export { domRenderer } from './DOMRenderer'
+export { canvasRenderer } from './CanvasRenderer'
+export { webGLRenderer } from './WebGLRenderer'

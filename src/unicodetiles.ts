@@ -17,7 +17,7 @@ export class Tile {
   ///   bg - (optional) green background color component 0-255
   ///   bb - (optional) blue background color component 0-255
   constructor(
-    private ch: string,
+    public ch: string,
     public r?: number,
     public g?: number,
     public b?: number,
@@ -144,9 +144,9 @@ const CSSCLASS = 'unicodetiles'
 const NULLTILE = new Tile(' ')
 
 export interface Renderer {
-  updateStyle(s: any): void
+  updateStyle(s?: any): void
 
-    // if (this.renderer instanceof ut.WebGLRenderer) return 'webgl'
+    // if (this.renderer instanceof ut.WebGLRenderer) return ''
     // if (this.renderer instanceof ut.CanvasRenderer) return 'canvas'
     // if (this.renderer instanceof ut.DOMRenderer) return 'dom'
   getRendererString(): string

@@ -4,7 +4,7 @@ import { Renderer, Viewport } from './unicodetiles'
 /// Renders the <Viewport> into DOM elements.
 ///
 /// *Note:* This is an internal class used by <Viewport>
-export class DOMRenderer implements Renderer {
+class DOMRenderer implements Renderer {
   private colors: string[][]
   private spans: HTMLElement[][]
 
@@ -57,7 +57,7 @@ export class DOMRenderer implements Renderer {
     }
   };
 
-  public updateStyle(s: any) {
+  public updateStyle(s?: any) {
     s = window.getComputedStyle(this.spans[0][0], null)
     let tw = parseInt(s.width, 10)
     if (tw === 0 || isNaN(tw)) return // Nothing to do, exit
@@ -82,4 +82,8 @@ export class DOMRenderer implements Renderer {
   public getRendererString(): string {
     return 'dom'
   }
+}
+
+export const domRenderer = function(viewport: Viewport): Renderer {
+  return new DOMRenderer(viewport)
 }
