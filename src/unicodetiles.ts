@@ -58,6 +58,18 @@ export class Tile {
     this.bb = b
   }
 
+  public backgroundToColor() {
+    this.r = this.br
+    this.g = this.bg
+    this.b = this.bb
+  }
+
+  public swapColors() {
+    this.r = [this.br, this.br = this.r][0]
+    this.g = [this.bg, this.bg = this.g][0]
+    this.b = [this.bb, this.bb = this.b][0]
+  }
+
   /// Function: resetColor
   /// Clears the color of this tile / assigns default color.
   public resetColor() { this.r = this.g = this.b = undefined }
