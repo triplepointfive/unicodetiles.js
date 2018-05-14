@@ -213,7 +213,7 @@ class WebGLRenderer implements Renderer {
     this.ctx.font = s.fontSize + '/' + s.lineHeight + ' ' + s.fontFamily
     this.ctx.textBaseline = 'middle'
     this.ctx.fillStyle = '#ffffff'
-    this.tw = this.ctx.measureText('M').width
+    this.tw = this.ctx.measureText('幅').width // TODO: Make a parameter
     this.th = parseInt(s.fontSize, 10)
     this.gap = this.view.squarify ? (this.th - this.tw) : 0
     if (this.view.squarify) this.tw = this.th
