@@ -522,7 +522,7 @@ export class Engine {
         if (this.w && (ixx < 0 || ixx >= this.w)) {
           tile = NULLTILE
         // Check vertical bounds if requested
-        } else if (this.h && (jyy < 0 || jyy >= this.w)) {
+        } else if (this.h && (jyy < 0 || jyy >= this.h)) {
           tile = NULLTILE
         // Check mask
         } else if (this.maskFunc && !this.maskFunc(ixx, jyy)) {
