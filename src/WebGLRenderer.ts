@@ -1,4 +1,4 @@
-import { Renderer, Viewport } from './unicodetiles'
+import { Renderer, Viewport } from "./unicodetiles"
 
 const VERTEX_SHADER = `
 attribute vec2 position;
@@ -65,11 +65,11 @@ class WebGLRenderer implements Renderer {
 
   constructor(private view: Viewport) {
     this.view = view
-    this.canvas = document.createElement('canvas')
+    this.canvas = document.createElement("canvas")
     // Try to fetch the context
-    if (!this.canvas.getContext) throw('Canvas not supported')
-    this.gl = this.canvas.getContext('experimental-webgl')
-    if (!this.gl) throw('WebGL not supported')
+    if (!this.canvas.getContext) throw "Canvas not supported"
+    this.gl = this.canvas.getContext("experimental-webgl")
+    if (!this.gl) throw "WebGL not supported"
     view.elem.appendChild(this.canvas)
 
     this.charMap = {}
@@ -77,22 +77,50 @@ class WebGLRenderer implements Renderer {
     this.defaultColors = { r: 1.0, g: 1.0, b: 1.0, br: 0.0, bg: 0.0, bb: 0.0 }
 
     this.attribs = {
-      position:  { buffer: null, data: null, itemSize: 2, location: null, hint: this.gl.STATIC_DRAW },
-      texCoord:  { buffer: null, data: null, itemSize: 2, location: null, hint: this.gl.STATIC_DRAW },
-      color:     { buffer: null, data: null, itemSize: 3, location: null, hint: this.gl.DYNAMIC_DRAW },
-      bgColor:   { buffer: null, data: null, itemSize: 3, location: null, hint: this.gl.DYNAMIC_DRAW },
-      charIndex: { buffer: null, data: null, itemSize: 1, location: null, hint: this.gl.DYNAMIC_DRAW }
+      position: {
+        buffer: null,
+        data: null,
+        itemSize: 2,
+        location: null,
+        hint: this.gl.STATIC_DRAW
+      },
+      texCoord: {
+        buffer: null,
+        data: null,
+        itemSize: 2,
+        location: null,
+        hint: this.gl.STATIC_DRAW
+      },
+      color: {
+        buffer: null,
+        data: null,
+        itemSize: 3,
+        location: null,
+        hint: this.gl.DYNAMIC_DRAW
+      },
+      bgColor: {
+        buffer: null,
+        data: null,
+        itemSize: 3,
+        location: null,
+        hint: this.gl.DYNAMIC_DRAW
+      },
+      charIndex: {
+        buffer: null,
+        data: null,
+        itemSize: 1,
+        location: null,
+        hint: this.gl.DYNAMIC_DRAW
+      }
     }
 
-
     // Create an offscreen canvas for rendering text to texture
-    if (!this.offscreen)
-      this.offscreen = document.createElement('canvas')
-    this.offscreen.style.position = 'absolute'
-    this.offscreen.style.top = '0px'
-    this.offscreen.style.left = '0px'
-    this.ctx = this.offscreen.getContext('2d')
-    if (!this.ctx) throw 'Failed to acquire offscreen canvas drawing context'
+    if (!this.offscreen) this.offscreen = document.createElement("canvas")
+    this.offscreen.style.position = "absolute"
+    this.offscreen.style.top = "0px"
+    this.offscreen.style.left = "0px"
+    this.ctx = this.offscreen.getContext("2d")
+    if (!this.ctx) throw "Failed to acquire offscreen canvas drawing context"
     // WebGL drawing canvas
     this.updateStyle()
     this.canvas.width = (view.squarify ? this.th : this.tw) * view.w
@@ -105,7 +133,10 @@ class WebGLRenderer implements Renderer {
     this.gl.viewport(0, 0, this.canvas.width, this.canvas.height)
 
     let vertexShader = this.compileShader(this.gl.VERTEX_SHADER, VERTEX_SHADER)
-    let fragmentShader = this.compileShader(this.gl.FRAGMENT_SHADER, FRAGMENT_SHADER)
+    let fragmentShader = this.compileShader(
+      this.gl.FRAGMENT_SHADER,
+      FRAGMENT_SHADER
+    )
     let program = this.gl.createProgram()
     this.gl.attachShader(program, vertexShader)
     this.gl.attachShader(program, fragmentShader)
@@ -121,30 +152,60 @@ class WebGLRenderer implements Renderer {
     this.gl.useProgram(program)
 
     // Get attribute locations
-    this.attribs.position.location  = this.gl.getAttribLocation(program, 'position')
-    this.attribs.texCoord.location  = this.gl.getAttribLocation(program, 'texCoord')
-    this.attribs.color.location     = this.gl.getAttribLocation(program, 'color')
-    this.attribs.bgColor.location   = this.gl.getAttribLocation(program, 'bgColor')
-    this.attribs.charIndex.location = this.gl.getAttribLocation(program, 'charIndex')
+    this.attribs.position.location = this.gl.getAttribLocation(
+      program,
+      "position"
+    )
+    this.attribs.texCoord.location = this.gl.getAttribLocation(
+      program,
+      "texCoord"
+    )
+    this.attribs.color.location = this.gl.getAttribLocation(program, "color")
+    this.attribs.bgColor.location = this.gl.getAttribLocation(
+      program,
+      "bgColor"
+    )
+    this.attribs.charIndex.location = this.gl.getAttribLocation(
+      program,
+      "charIndex"
+    )
 
     // Setup buffers and uniforms
     this.initBuffers()
-    let resolutionLocation = this.gl.getUniformLocation(program, 'uResolution')
+    let resolutionLocation = this.gl.getUniformLocation(program, "uResolution")
     this.gl.uniform2f(resolutionLocation, this.canvas.width, this.canvas.height)
-    this.tileCountsLocation = this.gl.getUniformLocation(program, 'uTileCounts')
+    this.tileCountsLocation = this.gl.getUniformLocation(program, "uTileCounts")
     this.gl.uniform2f(this.tileCountsLocation, this.view.w, this.view.h)
-    this.paddingLocation = this.gl.getUniformLocation(program, 'uPadding')
+    this.paddingLocation = this.gl.getUniformLocation(program, "uPadding")
     this.gl.uniform2f(this.paddingLocation, 0.0, 0.0)
 
     // Setup texture
     // view.elem.appendChild(this.offscreen) // Debug offscreen
     let texture = this.gl.createTexture()
     this.gl.bindTexture(this.gl.TEXTURE_2D, texture)
-    this.cacheChars(` !\"#$%&'()*+,-./0123456789:<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_\`abcdefghijklmnopqrstuvwxyz{|}~`)
-    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.NEAREST)
-    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.NEAREST)
-    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE)
-    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE)
+    this.cacheChars(
+      ` !\"#$%&'()*+,-./0123456789:<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_\`abcdefghijklmnopqrstuvwxyz{|}~`
+    )
+    this.gl.texParameteri(
+      this.gl.TEXTURE_2D,
+      this.gl.TEXTURE_MAG_FILTER,
+      this.gl.NEAREST
+    )
+    this.gl.texParameteri(
+      this.gl.TEXTURE_2D,
+      this.gl.TEXTURE_MIN_FILTER,
+      this.gl.NEAREST
+    )
+    this.gl.texParameteri(
+      this.gl.TEXTURE_2D,
+      this.gl.TEXTURE_WRAP_S,
+      this.gl.CLAMP_TO_EDGE
+    )
+    this.gl.texParameteri(
+      this.gl.TEXTURE_2D,
+      this.gl.TEXTURE_WRAP_T,
+      this.gl.CLAMP_TO_EDGE
+    )
     this.gl.activeTexture(this.gl.TEXTURE0)
 
     setTimeout(() => {
@@ -154,11 +215,13 @@ class WebGLRenderer implements Renderer {
     }, 100)
   }
 
-  public getRendererString(): string { return 'webgl' }
+  public getRendererString(): string {
+    return "webgl"
+  }
 
   private buildTexture() {
     let w = this.offscreen.width / (this.tw + this.pad),
-          h = this.offscreen.height / (this.th + this.pad)
+      h = this.offscreen.height / (this.th + this.pad)
     // Check if need to resize the canvas
     const charCount = this.charArray.length
     if (charCount > Math.floor(w) * Math.floor(h)) {
@@ -169,16 +232,21 @@ class WebGLRenderer implements Renderer {
       this.updateStyle()
       this.gl.uniform2f(this.tileCountsLocation, w, h)
     }
-    this.gl.uniform2f(this.paddingLocation, this.pad / this.offscreen.width, this.pad / this.offscreen.height)
+    this.gl.uniform2f(
+      this.paddingLocation,
+      this.pad / this.offscreen.width,
+      this.pad / this.offscreen.height
+    )
 
-    let c = 0, ch: string
-    this.ctx.fillStyle = '#000000'
+    let c = 0,
+      ch: string
+    this.ctx.fillStyle = "#000000"
     this.ctx.fillRect(0, 0, this.offscreen.width, this.offscreen.height)
-    this.ctx.fillStyle = '#ffffff'
+    this.ctx.fillStyle = "#ffffff"
 
     const halfGap = 0.5 * this.gap // Squarification
     const tw = this.tw + this.pad,
-          th = this.th + this.pad
+      th = this.th + this.pad
     let y = 0.5 * th // Half because textBaseline is middle
     for (let j = 0; j < h; ++j) {
       let x = this.pad * 0.5
@@ -191,7 +259,14 @@ class WebGLRenderer implements Renderer {
       if (!ch) break
       y += th
     }
-    this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, this.offscreen)
+    this.gl.texImage2D(
+      this.gl.TEXTURE_2D,
+      0,
+      this.gl.RGBA,
+      this.gl.RGBA,
+      this.gl.UNSIGNED_BYTE,
+      this.offscreen
+    )
   }
 
   private cacheChars(chars: string, build: boolean = true) {
@@ -210,12 +285,12 @@ class WebGLRenderer implements Renderer {
 
   public updateStyle(s?: any) {
     s = s || window.getComputedStyle(this.view.elem, null)
-    this.ctx.font = s.fontSize + '/' + s.lineHeight + ' ' + s.fontFamily
-    this.ctx.textBaseline = 'middle'
-    this.ctx.fillStyle = '#ffffff'
-    this.tw = this.ctx.measureText('幅').width // TODO: Make a parameter
+    this.ctx.font = s.fontSize + "/" + s.lineHeight + " " + s.fontFamily
+    this.ctx.textBaseline = "middle"
+    this.ctx.fillStyle = "#ffffff"
+    this.tw = this.ctx.measureText("幅").width // TODO: Make a parameter
     this.th = parseInt(s.fontSize, 10)
-    this.gap = this.view.squarify ? (this.th - this.tw) : 0
+    this.gap = this.view.squarify ? this.th - this.tw : 0
     if (this.view.squarify) this.tw = this.th
     this.pad = Math.ceil(this.th * 0.2) * 2.0 // Must be even number
 
@@ -229,7 +304,9 @@ class WebGLRenderer implements Renderer {
     this.defaultColors.bb = parseInt(bgColor[2], 10) / 255
   }
 
-  public clear() { /* No op */ }
+  public clear() {
+    /* No op */
+  }
 
   public render() {
     this.gl.clear(this.gl.COLOR_BUFFER_BIT)
@@ -246,7 +323,8 @@ class WebGLRenderer implements Renderer {
       for (let i = 0; i < w; ++i) {
         const tile = tiles[j][i]
         let ch = this.charMap[tile.ch]
-        if (ch === undefined) { // Auto-cache new characters
+        if (ch === undefined) {
+          // Auto-cache new characters
           this.cacheChars(tile.ch, false)
           newChars = true
           ch = this.charMap[tile.ch]
@@ -275,14 +353,30 @@ class WebGLRenderer implements Renderer {
     // Upload
     if (newChars) this.buildTexture()
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.attribs.color.buffer)
-    this.gl.bufferData(this.gl.ARRAY_BUFFER, this.attribs.color.data, this.attribs.color.hint)
+    this.gl.bufferData(
+      this.gl.ARRAY_BUFFER,
+      this.attribs.color.data,
+      this.attribs.color.hint
+    )
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.attribs.bgColor.buffer)
-    this.gl.bufferData(this.gl.ARRAY_BUFFER, this.attribs.bgColor.data, this.attribs.bgColor.hint)
+    this.gl.bufferData(
+      this.gl.ARRAY_BUFFER,
+      this.attribs.bgColor.data,
+      this.attribs.bgColor.hint
+    )
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.attribs.charIndex.buffer)
-    this.gl.bufferData(this.gl.ARRAY_BUFFER, this.attribs.charIndex.data, this.attribs.charIndex.hint)
+    this.gl.bufferData(
+      this.gl.ARRAY_BUFFER,
+      this.attribs.charIndex.data,
+      this.attribs.charIndex.hint
+    )
 
     const attrib = this.attribs.position
-    this.gl.drawArrays(this.gl.TRIANGLES, 0, attrib.data.length / attrib.itemSize)
+    this.gl.drawArrays(
+      this.gl.TRIANGLES,
+      0,
+      attrib.data.length / attrib.itemSize
+    )
   }
 
   // Setup GLSL
@@ -292,7 +386,7 @@ class WebGLRenderer implements Renderer {
     this.gl.compileShader(shader)
     const ok = this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)
     if (!ok) {
-      const msg = 'Error compiling shader: ' + this.gl.getShaderInfoLog(shader)
+      const msg = "Error compiling shader: " + this.gl.getShaderInfoLog(shader)
       this.gl.deleteShader(shader)
       throw msg
     }
@@ -300,10 +394,12 @@ class WebGLRenderer implements Renderer {
   }
 
   private initBuffers() {
-    let a, attrib, attribs = this.attribs
+    let a,
+      attrib,
+      attribs = this.attribs
 
     const w = this.view.w,
-          h = this.view.h
+      h = this.view.h
 
     // Allocate data arrays
     for (a in this.attribs) {
@@ -315,7 +411,14 @@ class WebGLRenderer implements Renderer {
       for (let i = 0; i < w; ++i) {
         // Position & texCoords
         const k = attribs.position.itemSize * 6 * (j * w + i)
-        this.insertQuad(attribs.position.data, k, i * this.tw, j * this.th, this.tw, this.th)
+        this.insertQuad(
+          attribs.position.data,
+          k,
+          i * this.tw,
+          j * this.th,
+          this.tw,
+          this.th
+        )
         this.insertQuad(attribs.texCoord.data, k, 0.0, 0.0, 1.0, 1.0)
       }
     }
@@ -327,17 +430,31 @@ class WebGLRenderer implements Renderer {
       this.gl.bindBuffer(this.gl.ARRAY_BUFFER, attrib.buffer)
       this.gl.bufferData(this.gl.ARRAY_BUFFER, attrib.data, attrib.hint)
       this.gl.enableVertexAttribArray(attrib.location)
-      this.gl.vertexAttribPointer(attrib.location, attrib.itemSize, this.gl.FLOAT, false, 0, 0)
+      this.gl.vertexAttribPointer(
+        attrib.location,
+        attrib.itemSize,
+        this.gl.FLOAT,
+        false,
+        0,
+        0
+      )
     }
   }
 
-  private insertQuad(arr: number[], i: number, x: number, y: number, w: number, h: number) {
+  private insertQuad(
+    arr: number[],
+    i: number,
+    x: number,
+    y: number,
+    w: number,
+    h: number
+  ) {
     const x1 = x,
-          y1 = y,
-          x2 = x + w,
-          y2 = y + h
+      y1 = y,
+      x2 = x + w,
+      y2 = y + h
 
-    arr[  i] = x1
+    arr[i] = x1
     arr[++i] = y1
     arr[++i] = x2
     arr[++i] = y1

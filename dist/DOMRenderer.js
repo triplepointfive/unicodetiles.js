@@ -1,10 +1,12 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 /// Class: DOMRenderer
 /// Renders the <Viewport> into DOM elements.
 ///
 /// *Note:* This is an internal class used by <Viewport>
-var DOMRenderer = (function () {
+var DOMRenderer = /** @class */ (function () {
     function DOMRenderer(view) {
+        var _this = this;
         this.view = view;
         // Create a matrix of <span> elements, cache references
         this.spans = new Array(view.h);
@@ -13,14 +15,14 @@ var DOMRenderer = (function () {
             this.spans[j] = new Array(view.w);
             this.colors[j] = new Array(view.w);
             for (var i = 0; i < view.w; ++i) {
-                this.spans[j][i] = document.createElement('div');
+                this.spans[j][i] = document.createElement("div");
                 view.elem.appendChild(this.spans[j][i]);
             }
             // Line break
-            this.spans[j].push(document.createElement('br'));
+            this.spans[j].push(document.createElement("br"));
             view.elem.appendChild(this.spans[j][view.w]);
         }
-        setTimeout(this.updateStyle, 0);
+        setTimeout(function () { return _this.updateStyle(); }, 0);
     }
     DOMRenderer.prototype.render = function () {
         var w = this.view.w, h = this.view.h, buffer = this.view.buffer, defaultColor = this.view.defaultColor, defaultBackground = this.view.defaultBackground;
@@ -45,7 +47,6 @@ var DOMRenderer = (function () {
             }
         }
     };
-    ;
     DOMRenderer.prototype.updateStyle = function (s) {
         s = window.getComputedStyle(this.spans[0][0], null);
         var tw = parseInt(s.width, 10);
@@ -57,21 +58,19 @@ var DOMRenderer = (function () {
         var w = this.view.w, h = this.view.h;
         for (var j = 0; j < h; ++j) {
             for (var i = 0; i < w; ++i) {
-                this.spans[j][i].style.width = tw + 'px';
+                this.spans[j][i].style.width = tw + "px";
             }
         }
     };
-    ;
     DOMRenderer.prototype.clear = function () {
         for (var j = 0; j < this.view.h; ++j) {
             for (var i = 0; i < this.view.w; ++i) {
-                this.colors[j][i] = '';
+                this.colors[j][i] = "";
             }
         }
     };
-    ;
     DOMRenderer.prototype.getRendererString = function () {
-        return 'dom';
+        return "dom";
     };
     return DOMRenderer;
 }());

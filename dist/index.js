@@ -1,7 +1,10 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var unicodetiles_1 = require("./unicodetiles");
 exports.Tile = unicodetiles_1.Tile;
 exports.Viewport = unicodetiles_1.Viewport;
+exports.Engine = unicodetiles_1.Engine;
+exports.NULLTILE = unicodetiles_1.NULLTILE;
 exports.VERSION = unicodetiles_1.VERSION;
 var DOMRenderer_1 = require("./DOMRenderer");
 exports.domRenderer = DOMRenderer_1.domRenderer;

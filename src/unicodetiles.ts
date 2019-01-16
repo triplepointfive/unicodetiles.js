@@ -23,16 +23,20 @@ export class Tile {
     public b?: number,
     public br?: number,
     public bg?: number,
-    public bb?: number,
+    public bb?: number
   ) {}
 
   /// Function: getChar
   /// Returns the character of this tile.
-  public getChar() { return this.ch }
+  public getChar() {
+    return this.ch
+  }
 
   /// Function: setChar
   /// Sets the character of this tile.
-  public setChar(ch: string) { this.ch = ch }
+  public setChar(ch: string) {
+    this.ch = ch
+  }
 
   /// Function: setColor
   /// Sets the foreground color of this tile.
@@ -65,33 +69,41 @@ export class Tile {
   }
 
   public swapColors() {
-    this.r = [this.br, this.br = this.r][0]
-    this.g = [this.bg, this.bg = this.g][0]
-    this.b = [this.bb, this.bb = this.b][0]
+    this.r = [this.br, (this.br = this.r)][0]
+    this.g = [this.bg, (this.bg = this.g)][0]
+    this.b = [this.bb, (this.bb = this.b)][0]
   }
 
   /// Function: resetColor
   /// Clears the color of this tile / assigns default color.
-  public resetColor() { this.r = this.g = this.b = undefined }
+  public resetColor() {
+    this.r = this.g = this.b = undefined
+  }
 
   /// Function: resetBackground
   /// Clears the background color of this tile.
-  public resetBackground() { this.br = this.bg = this.bb = undefined }
+  public resetBackground() {
+    this.br = this.bg = this.bb = undefined
+  }
 
   /// Function: getColorHex
   /// Returns the hexadecimal representation of the color
   public getColorHex() {
     if (this.r !== undefined && this.g !== undefined && this.b !== undefined)
-      return '#' + this.r.toString(16) + this.g.toString(16) + this.b.toString(16)
-    else return ''
+      return (
+        "#" + this.r.toString(16) + this.g.toString(16) + this.b.toString(16)
+      )
+    else return ""
   }
 
   /// Function: getBackgroundHex
   /// Returns the hexadecimal representation of the background color
   public getBackgroundHex() {
     if (this.br !== undefined && this.bg !== undefined && this.bb !== undefined)
-      return '#' + this.br.toString(16) + this.bg.toString(16) + this.bb.toString(16)
-    else return ''
+      return (
+        "#" + this.br.toString(16) + this.bg.toString(16) + this.bb.toString(16)
+      )
+    else return ""
   }
 
   /// Function: getColorRGB
@@ -99,7 +111,7 @@ export class Tile {
   public getColorRGB() {
     if (this.r !== undefined && this.g !== undefined && this.b !== undefined)
       return `rgb(${this.r},${this.g},${this.b})`
-    else return ''
+    else return ""
   }
 
   /// Function: getBackgroundRGB
@@ -107,14 +119,14 @@ export class Tile {
   public getBackgroundRGB() {
     if (this.br !== undefined && this.bg !== undefined && this.bb !== undefined)
       return `rgb(${this.br},${this.bg},${this.bb})`
-    else return ''
+    else return ""
   }
 
   /// Function: getColorJSON
   /// Returns the JSON representation of the color, i.e. object { r, g, b }
   public getColorJSON() {
     if (this.r !== undefined && this.g !== undefined && this.b !== undefined)
-      return { 'r': this.r, 'g': this.g, 'b': this.b }
+      return { r: this.r, g: this.g, b: this.b }
     else return {}
   }
 
@@ -122,7 +134,7 @@ export class Tile {
   /// Returns the JSON representation of the background color, i.e. object { r, g, b }
   public getBackgroundJSON() {
     if (this.r !== undefined && this.g !== undefined && this.b !== undefined)
-      return { 'r': this.br, 'g': this.bg, 'b': this.bb }
+      return { r: this.br, g: this.bg, b: this.bb }
     else return {}
   }
 
@@ -150,17 +162,17 @@ export class Tile {
 /// NULLCHAR - Character used when none is specified otherwise.
 /// CSSCLASS - The CSS class name used for the tile engine element.
 /// NULLTILE - The tile used as placeholder for empty tile.
-export const VERSION = '2.1'
-export const NULLCHAR = ' '
-export const CSSCLASS = 'unicodetiles'
+export const VERSION = "2.1"
+export const NULLCHAR = " "
+export const CSSCLASS = "unicodetiles"
 export const NULLTILE = new Tile(NULLCHAR)
 
 export interface Renderer {
   updateStyle(s?: any): void
 
-    // if (this.renderer instanceof ut.WebGLRenderer) return ''
-    // if (this.renderer instanceof ut.CanvasRenderer) return 'canvas'
-    // if (this.renderer instanceof ut.DOMRenderer) return 'dom'
+  // if (this.renderer instanceof ut.WebGLRenderer) return ''
+  // if (this.renderer instanceof ut.CanvasRenderer) return 'canvas'
+  // if (this.renderer instanceof ut.DOMRenderer) return 'dom'
   getRendererString(): string
 
   clear(): void
@@ -191,23 +203,22 @@ export class Viewport {
   public defaultBackground?: string
 
   constructor(
-    public elem: HTMLElement,
+    public elem: Element,
     public w: number,
     public h: number,
     renderer: (viewport: Viewport) => Renderer,
-    public squarify: boolean = false,
-    ) {
+    public squarify: boolean = false
+  ) {
     this.cx = Math.floor(w / 2)
     this.cy = Math.floor(h / 2)
 
-    this.elem.innerHTML = ''
+    this.elem.innerHTML = ""
 
     // Add CSS class if not added already
     if (elem.className.indexOf(CSSCLASS) === -1) {
       if (elem.className.length === 0) {
         elem.className = CSSCLASS
-      }
-      else elem.className += ' ' + CSSCLASS
+      } else elem.className += " " + CSSCLASS
     }
 
     // Create two 2-dimensional array to hold the viewport tiles
@@ -232,7 +243,7 @@ export class Viewport {
     if (updateRenderer) {
       this.renderer.updateStyle(s)
     }
-  };
+  }
 
   /// Function: getRendererString
   /// Gets the currently used renderer.
@@ -291,7 +302,7 @@ export class Viewport {
     b?: number,
     br?: number,
     bg?: number,
-    bb?: number,
+    bb?: number
   ) {
     const len = str.length
     if (x < 0 || y < 0) return
@@ -350,9 +361,22 @@ export class Engine {
   private transitionTimer?: number
 
   private transitionDuration: number = 0
-  private transition?: (x: number, y: number, w: number, h: number, new_t: Tile, old_t: Tile, factor: number) => Tile
+  private transition?: (
+    x: number,
+    y: number,
+    w: number,
+    h: number,
+    new_t: Tile,
+    old_t: Tile,
+    factor: number
+  ) => Tile
   private maskFunc?: (x: number, y: number) => boolean
-  private shaderFunc?: (tile: Tile, x: number, y: number, timeNow: number) => Tile
+  private shaderFunc?: (
+    tile: Tile,
+    x: number,
+    y: number,
+    timeNow: number
+  ) => Tile
   private cachex: number = 0
   private cachey: number = 0
 
@@ -374,9 +398,8 @@ export class Engine {
     public viewport: Viewport,
     public tileFunc: (x: number, y: number) => Tile,
     public w: number,
-    public h: number,
+    public h: number
   ) {
-
     this.tileCache = new Array(viewport.h)
     this.tileCache2 = new Array(viewport.h)
 
@@ -395,47 +418,64 @@ export class Engine {
   ///   func - function taking parameters (x, y) and returning an ut.Tile
   ///   effect - (string) (optional) name of effect to use (see above for legal values)
   ///   duration - (integer) (optional) how many milliseconds the transition effect should last
-  public setTileFunc(func: (x: number, y: number) => Tile, effect?: string, duration?: number) {
+  public setTileFunc(
+    func: (x: number, y: number) => Tile,
+    effect?: string,
+    duration?: number
+  ) {
     if (effect) {
       this.transition = undefined
-      if (typeof effect === 'string') {
-        if (effect === 'boxin') this.transition = function(x, y, w, h, new_t, old_t, factor) {
-          const halfw = w * 0.5, halfh = h * 0.5
-          x -= halfw
-          y -= halfh
-          if (Math.abs(x) < halfw * factor && Math.abs(y) < halfh * factor) return new_t
-          else return old_t
-        }
-        else if (effect === 'boxout') this.transition = function(x, y, w, h, new_t, old_t, factor) {
-          const halfw = w * 0.5, halfh = h * 0.5
-          x -= halfw
-          y -= halfh
-          factor = 1.0 - factor
-          if (Math.abs(x) < halfw * factor && Math.abs(y) < halfh * factor) return old_t
-          else return new_t
-        }
-        else if (effect === 'circlein') this.transition = function(x, y, w, h, new_t, old_t, factor) {
-          const halfw = w * 0.5, halfh = h * 0.5
-          x -= halfw
-          y -= halfh
-          if (x * x + y * y < (halfw * halfw + halfh * halfh) * factor) return new_t
-          else return old_t
-        }
-        else if (effect === 'circleout') this.transition = function(x, y, w, h, new_t, old_t, factor) {
-          const halfw = w * 0.5, halfh = h * 0.5
-          x -= halfw
-          y -= halfh
-          factor = 1.0 - factor
-          if (x * x + y * y > (halfw * halfw + halfh * halfh) * factor) return new_t
-          else return old_t
-        }
-        else if (effect === 'random') this.transition = function(x, y, w, h, new_t, old_t, factor) {
-          if (Math.random() > factor) return old_t
-          else return new_t
-        }
+      if (typeof effect === "string") {
+        if (effect === "boxin")
+          this.transition = function(x, y, w, h, new_t, old_t, factor) {
+            const halfw = w * 0.5,
+              halfh = h * 0.5
+            x -= halfw
+            y -= halfh
+            if (Math.abs(x) < halfw * factor && Math.abs(y) < halfh * factor)
+              return new_t
+            else return old_t
+          }
+        else if (effect === "boxout")
+          this.transition = function(x, y, w, h, new_t, old_t, factor) {
+            const halfw = w * 0.5,
+              halfh = h * 0.5
+            x -= halfw
+            y -= halfh
+            factor = 1.0 - factor
+            if (Math.abs(x) < halfw * factor && Math.abs(y) < halfh * factor)
+              return old_t
+            else return new_t
+          }
+        else if (effect === "circlein")
+          this.transition = function(x, y, w, h, new_t, old_t, factor) {
+            const halfw = w * 0.5,
+              halfh = h * 0.5
+            x -= halfw
+            y -= halfh
+            if (x * x + y * y < (halfw * halfw + halfh * halfh) * factor)
+              return new_t
+            else return old_t
+          }
+        else if (effect === "circleout")
+          this.transition = function(x, y, w, h, new_t, old_t, factor) {
+            const halfw = w * 0.5,
+              halfh = h * 0.5
+            x -= halfw
+            y -= halfh
+            factor = 1.0 - factor
+            if (x * x + y * y > (halfw * halfw + halfh * halfh) * factor)
+              return new_t
+            else return old_t
+          }
+        else if (effect === "random")
+          this.transition = function(x, y, w, h, new_t, old_t, factor) {
+            if (Math.random() > factor) return old_t
+            else return new_t
+          }
       }
       if (this.transition) {
-        this.transitionTimer = (new Date()).getTime()
+        this.transitionTimer = new Date().getTime()
         this.transitionDuration = duration || 500
       }
     }
@@ -448,7 +488,9 @@ export class Engine {
   ///
   /// Parameters:
   ///   func - function taking parameters (x, y) and returning a true if the tile is visible
-  public setMaskFunc(func: (x: number, y: number) => boolean) { this.maskFunc = func }
+  public setMaskFunc(func: (x: number, y: number) => boolean) {
+    this.maskFunc = func
+  }
 
   /// Function: setShaderFunc
   /// Sets the function to be called to post-process / shade each visible tile.
@@ -456,7 +498,9 @@ export class Engine {
   ///
   /// Parameters:
   ///   func - function taking parameters (tile, x, y) and returning an ut.Tile
-  public setShaderFunc(func: (tile: Tile, x: number, y: number) => Tile) { this.shaderFunc = func }
+  public setShaderFunc(func: (tile: Tile, x: number, y: number) => Tile) {
+    this.shaderFunc = func
+  }
 
   /// Function: setWorldSize
   /// Tiles outside of the range x = [0,width[ y = [0,height[ are not fetched.
@@ -507,9 +551,10 @@ export class Engine {
     // World coords of upper left corner of the viewport
     const xx = x - this.viewport.cx
     const yy = y - this.viewport.cy
-    const timeNow = (new Date()).getTime() // For passing to shaderFunc
+    const timeNow = new Date().getTime() // For passing to shaderFunc
     let transTime
-    if (this.transition && this.transitionTimer) transTime = (timeNow - this.transitionTimer) / this.transitionDuration
+    if (this.transition && this.transitionTimer)
+      transTime = (timeNow - this.transitionTimer) / this.transitionDuration
     if (transTime && transTime >= 1.0) this.transition = undefined
 
     let tile: Tile
@@ -517,17 +562,18 @@ export class Engine {
     // For each tile in viewport...
     for (let j = 0; j < this.viewport.h; ++j) {
       for (let i = 0; i < this.viewport.w; ++i) {
-        const ixx = i + xx, jyy = j + yy
+        const ixx = i + xx,
+          jyy = j + yy
         // Check horizontal bounds if requested
         if (this.w && (ixx < 0 || ixx >= this.w)) {
           tile = NULLTILE
-        // Check vertical bounds if requested
+          // Check vertical bounds if requested
         } else if (this.h && (jyy < 0 || jyy >= this.h)) {
           tile = NULLTILE
-        // Check mask
+          // Check mask
         } else if (this.maskFunc && !this.maskFunc(ixx, jyy)) {
           tile = NULLTILE
-        // Check transition effect
+          // Check transition effect
         } else if (this.transition && !this.refreshCache) {
           tile = this.transition(
             i,
@@ -538,16 +584,21 @@ export class Engine {
             this.tileCache[j][i],
             transTime || 0
           )
-        // Check cache
+          // Check cache
         } else if (this.cacheEnabled && !this.refreshCache) {
           const lookupx = ixx - this.cachex
           const lookupy = jyy - this.cachey
-          if (lookupx >= 0 && lookupx < this.viewport.w && lookupy >= 0 && lookupy < this.viewport.h) {
+          if (
+            lookupx >= 0 &&
+            lookupx < this.viewport.w &&
+            lookupy >= 0 &&
+            lookupy < this.viewport.h
+          ) {
             tile = this.tileCache[lookupy][lookupx]
             if (tile === NULLTILE) tile = this.tileFunc(ixx, jyy)
-          } else // Cache miss
-            tile = this.tileFunc(ixx, jyy)
-        // If all else fails, call tileFunc
+          } // Cache miss
+          else tile = this.tileFunc(ixx, jyy)
+          // If all else fails, call tileFunc
         } else tile = this.tileFunc(ixx, jyy)
         // Save the tile to cache (always due to transition effects)
         this.tileCache2[j][i] = tile

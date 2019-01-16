@@ -1,4 +1,4 @@
-import { Renderer, Viewport } from './unicodetiles'
+import { Renderer, Viewport } from "./unicodetiles"
 
 /// Class: DOMRenderer
 /// Renders the <Viewport> into DOM elements.
@@ -16,11 +16,11 @@ class DOMRenderer implements Renderer {
       this.spans[j] = new Array(view.w)
       this.colors[j] = new Array(view.w)
       for (let i = 0; i < view.w; ++i) {
-        this.spans[j][i] = document.createElement('div')
+        this.spans[j][i] = document.createElement("div")
         view.elem.appendChild(this.spans[j][i])
       }
       // Line break
-      this.spans[j].push(document.createElement('br'))
+      this.spans[j].push(document.createElement("br"))
       view.elem.appendChild(this.spans[j][view.w])
     }
     setTimeout(() => this.updateStyle(), 0)
@@ -28,10 +28,10 @@ class DOMRenderer implements Renderer {
 
   public render(): void {
     const w = this.view.w,
-          h = this.view.h,
-          buffer = this.view.buffer,
-          defaultColor = this.view.defaultColor,
-          defaultBackground = this.view.defaultBackground
+      h = this.view.h,
+      buffer = this.view.buffer,
+      defaultColor = this.view.defaultColor,
+      defaultBackground = this.view.defaultBackground
 
     for (let j = 0; j < h; ++j) {
       for (let i = 0; i < w; ++i) {
@@ -40,7 +40,8 @@ class DOMRenderer implements Renderer {
 
         // Check and update colors
         const fg = tile.r === undefined ? defaultColor : tile.getColorRGB()
-        const bg = tile.br === undefined ? defaultBackground : tile.getBackgroundRGB()
+        const bg =
+          tile.br === undefined ? defaultBackground : tile.getBackgroundRGB()
         const colorHash = fg + bg
         if (colorHash !== this.colors[j][i]) {
           this.colors[j][i] = colorHash
@@ -55,7 +56,7 @@ class DOMRenderer implements Renderer {
         }
       }
     }
-  };
+  }
 
   public updateStyle(s?: any) {
     s = window.getComputedStyle(this.spans[0][0], null)
@@ -63,24 +64,25 @@ class DOMRenderer implements Renderer {
     if (tw === 0 || isNaN(tw)) return // Nothing to do, exit
     const th = parseInt(s.height, 10)
     if (this.view.squarify) tw = th
-    const w = this.view.w, h = this.view.h
+    const w = this.view.w,
+      h = this.view.h
     for (let j = 0; j < h; ++j) {
       for (let i = 0; i < w; ++i) {
-        this.spans[j][i].style.width = tw + 'px'
+        this.spans[j][i].style.width = tw + "px"
       }
     }
-  };
+  }
 
   public clear(): void {
     for (let j = 0; j < this.view.h; ++j) {
       for (let i = 0; i < this.view.w; ++i) {
-        this.colors[j][i] = ''
+        this.colors[j][i] = ""
       }
     }
-  };
+  }
 
   public getRendererString(): string {
-    return 'dom'
+    return "dom"
   }
 }
 

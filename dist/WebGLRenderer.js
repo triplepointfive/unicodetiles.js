@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var VERTEX_SHADER = "\nattribute vec2 position;\nattribute vec2 texCoord;\nattribute vec3 color;\nattribute vec3 bgColor;\nattribute float charIndex;\nuniform vec2 uResolution;\nuniform vec2 uTileCounts;\nuniform vec2 uPadding;\nvarying vec2 vTexCoord;\nvarying vec3 vColor;\nvarying vec3 vBgColor;\n\nvoid main() {\n  vec2 tileCoords = floor(vec2(mod(charIndex, uTileCounts.x), charIndex / uTileCounts.x));\n  vTexCoord = (texCoord + tileCoords) / uTileCounts;\n  vTexCoord += (0.5 - texCoord) * uPadding;\n  vColor = color;\n  vBgColor = bgColor;\n  vec2 pos = position / uResolution * 2.0 - 1.0;\n  gl_Position = vec4(pos.x, -pos.y, 0.0, 1.0);\n}\n";
 var FRAGMENT_SHADER = "\nprecision mediump float;\nuniform sampler2D uFont;\nvarying vec2 vTexCoord;\nvarying vec3 vColor;\nvarying vec3 vBgColor;\n\nvoid main() {\n  vec4 color = texture2D(uFont, vTexCoord);\n  color.rgb = mix(vBgColor, vColor, color.rgb);\n  gl_FragColor = color;\n}\n";
 /// Class: WebGLRenderer
@@ -6,38 +7,68 @@ var FRAGMENT_SHADER = "\nprecision mediump float;\nuniform sampler2D uFont;\nvar
 /// Given decent GPU drivers and browser support, this is the fastest renderer.
 ///
 /// *Note:* This is an internal class used by <Viewport>
-var WebGLRenderer = (function () {
+var WebGLRenderer = /** @class */ (function () {
     function WebGLRenderer(view) {
         var _this = this;
         this.view = view;
         this.view = view;
-        this.canvas = document.createElement('canvas');
+        this.canvas = document.createElement("canvas");
         // Try to fetch the context
         if (!this.canvas.getContext)
-            throw ('Canvas not supported');
-        this.gl = this.canvas.getContext('experimental-webgl');
+            throw "Canvas not supported";
+        this.gl = this.canvas.getContext("experimental-webgl");
         if (!this.gl)
-            throw ('WebGL not supported');
+            throw "WebGL not supported";
         view.elem.appendChild(this.canvas);
         this.charMap = {};
         this.charArray = [];
         this.defaultColors = { r: 1.0, g: 1.0, b: 1.0, br: 0.0, bg: 0.0, bb: 0.0 };
         this.attribs = {
-            position: { buffer: null, data: null, itemSize: 2, location: null, hint: this.gl.STATIC_DRAW },
-            texCoord: { buffer: null, data: null, itemSize: 2, location: null, hint: this.gl.STATIC_DRAW },
-            color: { buffer: null, data: null, itemSize: 3, location: null, hint: this.gl.DYNAMIC_DRAW },
-            bgColor: { buffer: null, data: null, itemSize: 3, location: null, hint: this.gl.DYNAMIC_DRAW },
-            charIndex: { buffer: null, data: null, itemSize: 1, location: null, hint: this.gl.DYNAMIC_DRAW }
+            position: {
+                buffer: null,
+                data: null,
+                itemSize: 2,
+                location: null,
+                hint: this.gl.STATIC_DRAW
+            },
+            texCoord: {
+                buffer: null,
+                data: null,
+                itemSize: 2,
+                location: null,
+                hint: this.gl.STATIC_DRAW
+            },
+            color: {
+                buffer: null,
+                data: null,
+                itemSize: 3,
+                location: null,
+                hint: this.gl.DYNAMIC_DRAW
+            },
+            bgColor: {
+                buffer: null,
+                data: null,
+                itemSize: 3,
+                location: null,
+                hint: this.gl.DYNAMIC_DRAW
+            },
+            charIndex: {
+                buffer: null,
+                data: null,
+                itemSize: 1,
+                location: null,
+                hint: this.gl.DYNAMIC_DRAW
+            }
         };
         // Create an offscreen canvas for rendering text to texture
         if (!this.offscreen)
-            this.offscreen = document.createElement('canvas');
-        this.offscreen.style.position = 'absolute';
-        this.offscreen.style.top = '0px';
-        this.offscreen.style.left = '0px';
-        this.ctx = this.offscreen.getContext('2d');
+            this.offscreen = document.createElement("canvas");
+        this.offscreen.style.position = "absolute";
+        this.offscreen.style.top = "0px";
+        this.offscreen.style.left = "0px";
+        this.ctx = this.offscreen.getContext("2d");
         if (!this.ctx)
-            throw 'Failed to acquire offscreen canvas drawing context';
+            throw "Failed to acquire offscreen canvas drawing context";
         // WebGL drawing canvas
         this.updateStyle();
         this.canvas.width = (view.squarify ? this.th : this.tw) * view.w;
@@ -63,18 +94,18 @@ var WebGLRenderer = (function () {
         }
         this.gl.useProgram(program);
         // Get attribute locations
-        this.attribs.position.location = this.gl.getAttribLocation(program, 'position');
-        this.attribs.texCoord.location = this.gl.getAttribLocation(program, 'texCoord');
-        this.attribs.color.location = this.gl.getAttribLocation(program, 'color');
-        this.attribs.bgColor.location = this.gl.getAttribLocation(program, 'bgColor');
-        this.attribs.charIndex.location = this.gl.getAttribLocation(program, 'charIndex');
+        this.attribs.position.location = this.gl.getAttribLocation(program, "position");
+        this.attribs.texCoord.location = this.gl.getAttribLocation(program, "texCoord");
+        this.attribs.color.location = this.gl.getAttribLocation(program, "color");
+        this.attribs.bgColor.location = this.gl.getAttribLocation(program, "bgColor");
+        this.attribs.charIndex.location = this.gl.getAttribLocation(program, "charIndex");
         // Setup buffers and uniforms
         this.initBuffers();
-        var resolutionLocation = this.gl.getUniformLocation(program, 'uResolution');
+        var resolutionLocation = this.gl.getUniformLocation(program, "uResolution");
         this.gl.uniform2f(resolutionLocation, this.canvas.width, this.canvas.height);
-        this.tileCountsLocation = this.gl.getUniformLocation(program, 'uTileCounts');
+        this.tileCountsLocation = this.gl.getUniformLocation(program, "uTileCounts");
         this.gl.uniform2f(this.tileCountsLocation, this.view.w, this.view.h);
-        this.paddingLocation = this.gl.getUniformLocation(program, 'uPadding');
+        this.paddingLocation = this.gl.getUniformLocation(program, "uPadding");
         this.gl.uniform2f(this.paddingLocation, 0.0, 0.0);
         // Setup texture
         // view.elem.appendChild(this.offscreen) // Debug offscreen
@@ -92,7 +123,9 @@ var WebGLRenderer = (function () {
             _this.render();
         }, 100);
     }
-    WebGLRenderer.prototype.getRendererString = function () { return 'webgl'; };
+    WebGLRenderer.prototype.getRendererString = function () {
+        return "webgl";
+    };
     WebGLRenderer.prototype.buildTexture = function () {
         var w = this.offscreen.width / (this.tw + this.pad), h = this.offscreen.height / (this.th + this.pad);
         // Check if need to resize the canvas
@@ -107,9 +140,9 @@ var WebGLRenderer = (function () {
         }
         this.gl.uniform2f(this.paddingLocation, this.pad / this.offscreen.width, this.pad / this.offscreen.height);
         var c = 0, ch;
-        this.ctx.fillStyle = '#000000';
+        this.ctx.fillStyle = "#000000";
         this.ctx.fillRect(0, 0, this.offscreen.width, this.offscreen.height);
-        this.ctx.fillStyle = '#ffffff';
+        this.ctx.fillStyle = "#ffffff";
         var halfGap = 0.5 * this.gap; // Squarification
         var tw = this.tw + this.pad, th = this.th + this.pad;
         var y = 0.5 * th; // Half because textBaseline is middle
@@ -145,12 +178,12 @@ var WebGLRenderer = (function () {
     };
     WebGLRenderer.prototype.updateStyle = function (s) {
         s = s || window.getComputedStyle(this.view.elem, null);
-        this.ctx.font = s.fontSize + '/' + s.lineHeight + ' ' + s.fontFamily;
-        this.ctx.textBaseline = 'middle';
-        this.ctx.fillStyle = '#ffffff';
-        this.tw = this.ctx.measureText('M').width;
+        this.ctx.font = s.fontSize + "/" + s.lineHeight + " " + s.fontFamily;
+        this.ctx.textBaseline = "middle";
+        this.ctx.fillStyle = "#ffffff";
+        this.tw = this.ctx.measureText("幅").width; // TODO: Make a parameter
         this.th = parseInt(s.fontSize, 10);
-        this.gap = this.view.squarify ? (this.th - this.tw) : 0;
+        this.gap = this.view.squarify ? this.th - this.tw : 0;
         if (this.view.squarify)
             this.tw = this.th;
         this.pad = Math.ceil(this.th * 0.2) * 2.0; // Must be even number
@@ -163,7 +196,9 @@ var WebGLRenderer = (function () {
         this.defaultColors.bg = parseInt(bgColor[1], 10) / 255;
         this.defaultColors.bb = parseInt(bgColor[2], 10) / 255;
     };
-    WebGLRenderer.prototype.clear = function () { };
+    WebGLRenderer.prototype.clear = function () {
+        /* No op */
+    };
     WebGLRenderer.prototype.render = function () {
         this.gl.clear(this.gl.COLOR_BUFFER_BIT);
         var w = this.view.w, h = this.view.h;
@@ -177,6 +212,7 @@ var WebGLRenderer = (function () {
                 var tile = tiles[j][i];
                 var ch = this.charMap[tile.ch];
                 if (ch === undefined) {
+                    // Auto-cache new characters
                     this.cacheChars(tile.ch, false);
                     newChars = true;
                     ch = this.charMap[tile.ch];
@@ -220,7 +256,7 @@ var WebGLRenderer = (function () {
         this.gl.compileShader(shader);
         var ok = this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS);
         if (!ok) {
-            var msg = 'Error compiling shader: ' + this.gl.getShaderInfoLog(shader);
+            var msg = "Error compiling shader: " + this.gl.getShaderInfoLog(shader);
             this.gl.deleteShader(shader);
             throw msg;
         }

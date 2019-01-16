@@ -1,4 +1,4 @@
-import { Renderer, Viewport } from './unicodetiles'
+import { Renderer, Viewport } from "./unicodetiles"
 
 /// Class: CanvasRenderer
 /// Renders the <Viewport> into an HTML5 <canvas> element.
@@ -15,15 +15,15 @@ class CanvasRenderer implements Renderer {
   private gap?: number
 
   constructor(private view: Viewport) {
-    this.canvas = document.createElement('canvas')
-    if (!this.canvas.getContext) throw('Canvas not supported')
-    this.ctx2 = this.canvas.getContext('2d')
-    if (!this.ctx2 || !this.ctx2.fillText) throw('Canvas not supported')
+    this.canvas = document.createElement("canvas")
+    if (!this.canvas.getContext) throw "Canvas not supported"
+    this.ctx2 = this.canvas.getContext("2d")
+    if (!this.ctx2 || !this.ctx2.fillText) throw "Canvas not supported"
     view.elem.appendChild(this.canvas)
 
     // Create an offscreen canvas for rendering
-    this.offscreen = document.createElement('canvas')
-    this.ctx = this.offscreen.getContext('2d')
+    this.offscreen = document.createElement("canvas")
+    this.ctx = this.offscreen.getContext("2d")
     this.updateStyle()
     this.canvas.width = (view.squarify ? this.th : this.tw) * view.w
     this.canvas.height = this.th * view.h
@@ -33,27 +33,32 @@ class CanvasRenderer implements Renderer {
     this.updateStyle()
   }
 
-  public getRendererString(): string { return 'canvas' }
+  public getRendererString(): string {
+    return "canvas"
+  }
 
   public updateStyle(s?: any) {
     s = s || window.getComputedStyle(this.view.elem, null)
     this.ctx.font = `${s.fontSize}/${s.lineHeight} ${s.fontFamily}`
-    this.ctx.textBaseline = 'middle'
-    this.tw = this.ctx.measureText('M').width
+    this.ctx.textBaseline = "middle"
+    this.tw = this.ctx.measureText("M").width
     this.th = parseInt(s.fontSize, 10)
-    this.gap = this.view.squarify ? (this.th - this.tw) : 0
+    this.gap = this.view.squarify ? this.th - this.tw : 0
     if (this.view.squarify) this.tw = this.th
   }
 
-  public clear() { /* No op */ }
+  public clear() {
+    /* No op */
+  }
 
   public render() {
     let tile, ch, fg, bg, x, y
     const view = this.view,
-          buffer = this.view.buffer,
-          w = view.w, h = view.h,
-          hth = 0.5 * this.th,
-          hgap = 0.5 * this.gap // Squarification
+      buffer = this.view.buffer,
+      w = view.w,
+      h = view.h,
+      hth = 0.5 * this.th,
+      hgap = 0.5 * this.gap // Squarification
 
     // Clearing with one big rect is much faster than with individual char rects
     this.ctx.fillStyle = view.defaultBackground

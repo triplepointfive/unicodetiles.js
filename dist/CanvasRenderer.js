@@ -1,21 +1,22 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 /// Class: CanvasRenderer
 /// Renders the <Viewport> into an HTML5 <canvas> element.
 ///
 /// *Note:* This is an internal class used by <Viewport>
-var CanvasRenderer = (function () {
+var CanvasRenderer = /** @class */ (function () {
     function CanvasRenderer(view) {
         this.view = view;
-        this.canvas = document.createElement('canvas');
+        this.canvas = document.createElement("canvas");
         if (!this.canvas.getContext)
-            throw ('Canvas not supported');
-        this.ctx2 = this.canvas.getContext('2d');
+            throw "Canvas not supported";
+        this.ctx2 = this.canvas.getContext("2d");
         if (!this.ctx2 || !this.ctx2.fillText)
-            throw ('Canvas not supported');
+            throw "Canvas not supported";
         view.elem.appendChild(this.canvas);
         // Create an offscreen canvas for rendering
-        this.offscreen = document.createElement('canvas');
-        this.ctx = this.offscreen.getContext('2d');
+        this.offscreen = document.createElement("canvas");
+        this.ctx = this.offscreen.getContext("2d");
         this.updateStyle();
         this.canvas.width = (view.squarify ? this.th : this.tw) * view.w;
         this.canvas.height = this.th * view.h;
@@ -24,18 +25,22 @@ var CanvasRenderer = (function () {
         // Doing this again since setting canvas w/h resets the state
         this.updateStyle();
     }
-    CanvasRenderer.prototype.getRendererString = function () { return 'canvas'; };
+    CanvasRenderer.prototype.getRendererString = function () {
+        return "canvas";
+    };
     CanvasRenderer.prototype.updateStyle = function (s) {
         s = s || window.getComputedStyle(this.view.elem, null);
         this.ctx.font = s.fontSize + "/" + s.lineHeight + " " + s.fontFamily;
-        this.ctx.textBaseline = 'middle';
-        this.tw = this.ctx.measureText('M').width;
+        this.ctx.textBaseline = "middle";
+        this.tw = this.ctx.measureText("M").width;
         this.th = parseInt(s.fontSize, 10);
-        this.gap = this.view.squarify ? (this.th - this.tw) : 0;
+        this.gap = this.view.squarify ? this.th - this.tw : 0;
         if (this.view.squarify)
             this.tw = this.th;
     };
-    CanvasRenderer.prototype.clear = function () { };
+    CanvasRenderer.prototype.clear = function () {
+        /* No op */
+    };
     CanvasRenderer.prototype.render = function () {
         var tile, ch, fg, bg, x, y;
         var view = this.view, buffer = this.view.buffer, w = view.w, h = view.h, hth = 0.5 * this.th, hgap = 0.5 * this.gap; // Squarification

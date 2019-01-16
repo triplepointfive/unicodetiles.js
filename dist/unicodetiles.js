@@ -1,10 +1,11 @@
+"use strict";
 /// This file contains the main tile engine namespace.
 /// All coordinates are assumed to be integers - behaviour is undefined
 /// if you feed in floats (or anything other) as x and y (or similar) parameters.
-"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 /// Class: Tile
 /// Represents a unicode character tile with various attributes.
-var Tile = (function () {
+var Tile = /** @class */ (function () {
     /// Constructor: Tile
     /// Constructs a new Tile object.
     ///
@@ -27,10 +28,14 @@ var Tile = (function () {
     }
     /// Function: getChar
     /// Returns the character of this tile.
-    Tile.prototype.getChar = function () { return this.ch; };
+    Tile.prototype.getChar = function () {
+        return this.ch;
+    };
     /// Function: setChar
     /// Sets the character of this tile.
-    Tile.prototype.setChar = function (ch) { this.ch = ch; };
+    Tile.prototype.setChar = function (ch) {
+        this.ch = ch;
+    };
     /// Function: setColor
     /// Sets the foreground color of this tile.
     Tile.prototype.setColor = function (r, g, b) {
@@ -52,27 +57,41 @@ var Tile = (function () {
         this.bg = g;
         this.bb = b;
     };
+    Tile.prototype.backgroundToColor = function () {
+        this.r = this.br;
+        this.g = this.bg;
+        this.b = this.bb;
+    };
+    Tile.prototype.swapColors = function () {
+        this.r = [this.br, (this.br = this.r)][0];
+        this.g = [this.bg, (this.bg = this.g)][0];
+        this.b = [this.bb, (this.bb = this.b)][0];
+    };
     /// Function: resetColor
     /// Clears the color of this tile / assigns default color.
-    Tile.prototype.resetColor = function () { this.r = this.g = this.b = undefined; };
+    Tile.prototype.resetColor = function () {
+        this.r = this.g = this.b = undefined;
+    };
     /// Function: resetBackground
     /// Clears the background color of this tile.
-    Tile.prototype.resetBackground = function () { this.br = this.bg = this.bb = undefined; };
+    Tile.prototype.resetBackground = function () {
+        this.br = this.bg = this.bb = undefined;
+    };
     /// Function: getColorHex
     /// Returns the hexadecimal representation of the color
     Tile.prototype.getColorHex = function () {
         if (this.r !== undefined && this.g !== undefined && this.b !== undefined)
-            return '#' + this.r.toString(16) + this.g.toString(16) + this.b.toString(16);
+            return ("#" + this.r.toString(16) + this.g.toString(16) + this.b.toString(16));
         else
-            return '';
+            return "";
     };
     /// Function: getBackgroundHex
     /// Returns the hexadecimal representation of the background color
     Tile.prototype.getBackgroundHex = function () {
         if (this.br !== undefined && this.bg !== undefined && this.bb !== undefined)
-            return '#' + this.br.toString(16) + this.bg.toString(16) + this.bb.toString(16);
+            return ("#" + this.br.toString(16) + this.bg.toString(16) + this.bb.toString(16));
         else
-            return '';
+            return "";
     };
     /// Function: getColorRGB
     /// Returns the CSS rgb(r,g,b) representation of the color
@@ -80,7 +99,7 @@ var Tile = (function () {
         if (this.r !== undefined && this.g !== undefined && this.b !== undefined)
             return "rgb(" + this.r + "," + this.g + "," + this.b + ")";
         else
-            return '';
+            return "";
     };
     /// Function: getBackgroundRGB
     /// Returns the CSS rgb(r,g,b) representation of the background color
@@ -88,13 +107,13 @@ var Tile = (function () {
         if (this.br !== undefined && this.bg !== undefined && this.bb !== undefined)
             return "rgb(" + this.br + "," + this.bg + "," + this.bb + ")";
         else
-            return '';
+            return "";
     };
     /// Function: getColorJSON
     /// Returns the JSON representation of the color, i.e. object { r, g, b }
     Tile.prototype.getColorJSON = function () {
         if (this.r !== undefined && this.g !== undefined && this.b !== undefined)
-            return { 'r': this.r, 'g': this.g, 'b': this.b };
+            return { r: this.r, g: this.g, b: this.b };
         else
             return {};
     };
@@ -102,7 +121,7 @@ var Tile = (function () {
     /// Returns the JSON representation of the background color, i.e. object { r, g, b }
     Tile.prototype.getBackgroundJSON = function () {
         if (this.r !== undefined && this.g !== undefined && this.b !== undefined)
-            return { 'r': this.br, 'g': this.bg, 'b': this.bb };
+            return { r: this.br, g: this.bg, b: this.bb };
         else
             return {};
     };
@@ -130,10 +149,10 @@ exports.Tile = Tile;
 /// NULLCHAR - Character used when none is specified otherwise.
 /// CSSCLASS - The CSS class name used for the tile engine element.
 /// NULLTILE - The tile used as placeholder for empty tile.
-exports.VERSION = '2.1';
-var NULLCHAR = ' ';
-var CSSCLASS = 'unicodetiles';
-var NULLTILE = new Tile(' ');
+exports.VERSION = "2.1";
+exports.NULLCHAR = " ";
+exports.CSSCLASS = "unicodetiles";
+exports.NULLTILE = new Tile(exports.NULLCHAR);
 /// Class: Viewport
 /// The tile engine viewport / window. Takes care of initializing a proper renderer.
 /// Constructor: Viewport
@@ -146,7 +165,7 @@ var NULLTILE = new Tile(' ');
 ///   h - (integer) height in tiles
 ///   renderer - (optional) choose rendering engine, see <Viewport.setRenderer>, defaults to 'auto'.
 ///   squarify - (optional) set to true to force the tiles square; may break some box drawing
-var Viewport = (function () {
+var Viewport = /** @class */ (function () {
     function Viewport(elem, w, h, renderer, squarify) {
         if (squarify === void 0) { squarify = false; }
         this.elem = elem;
@@ -155,21 +174,21 @@ var Viewport = (function () {
         this.squarify = squarify;
         this.cx = Math.floor(w / 2);
         this.cy = Math.floor(h / 2);
-        this.elem.innerHTML = '';
+        this.elem.innerHTML = "";
         // Add CSS class if not added already
-        if (elem.className.indexOf(CSSCLASS) === -1) {
+        if (elem.className.indexOf(exports.CSSCLASS) === -1) {
             if (elem.className.length === 0) {
-                elem.className = CSSCLASS;
+                elem.className = exports.CSSCLASS;
             }
             else
-                elem.className += ' ' + CSSCLASS;
+                elem.className += " " + exports.CSSCLASS;
         }
         // Create two 2-dimensional array to hold the viewport tiles
         this.buffer = new Array(h);
         for (var j = 0; j < h; ++j) {
             this.buffer[j] = new Array(w);
             for (var i = 0; i < w; ++i) {
-                this.buffer[j][i] = NULLTILE;
+                this.buffer[j][i] = exports.NULLTILE;
             }
         }
         this.renderer = renderer(this);
@@ -184,7 +203,6 @@ var Viewport = (function () {
             this.renderer.updateStyle(s);
         }
     };
-    ;
     /// Function: getRendererString
     /// Gets the currently used renderer.
     ///
@@ -259,7 +277,7 @@ var Viewport = (function () {
     ///   The tile.
     Viewport.prototype.get = function (x, y) {
         if (x < 0 || y < 0 || x >= this.w || y >= this.h)
-            return NULLTILE;
+            return exports.NULLTILE;
         return this.buffer[y][x];
     };
     /// Function: clear
@@ -267,7 +285,7 @@ var Viewport = (function () {
     Viewport.prototype.clear = function () {
         for (var j = 0; j < this.h; ++j) {
             for (var i = 0; i < this.w; ++i) {
-                this.buffer[j][i] = NULLTILE;
+                this.buffer[j][i] = exports.NULLTILE;
             }
         }
         this.renderer.clear();
@@ -282,7 +300,7 @@ var Viewport = (function () {
 exports.Viewport = Viewport;
 /// Class: Engine
 /// The tile engine itself.
-var Engine = (function () {
+var Engine = /** @class */ (function () {
     /// Constructor: Engine
     /// Constructs a new Engine object. If width or height is given,
     /// it will not attempt to fetch tiles outside the boundaries.
@@ -323,8 +341,8 @@ var Engine = (function () {
     Engine.prototype.setTileFunc = function (func, effect, duration) {
         if (effect) {
             this.transition = undefined;
-            if (typeof effect === 'string') {
-                if (effect === 'boxin')
+            if (typeof effect === "string") {
+                if (effect === "boxin")
                     this.transition = function (x, y, w, h, new_t, old_t, factor) {
                         var halfw = w * 0.5, halfh = h * 0.5;
                         x -= halfw;
@@ -334,7 +352,7 @@ var Engine = (function () {
                         else
                             return old_t;
                     };
-                else if (effect === 'boxout')
+                else if (effect === "boxout")
                     this.transition = function (x, y, w, h, new_t, old_t, factor) {
                         var halfw = w * 0.5, halfh = h * 0.5;
                         x -= halfw;
@@ -345,7 +363,7 @@ var Engine = (function () {
                         else
                             return new_t;
                     };
-                else if (effect === 'circlein')
+                else if (effect === "circlein")
                     this.transition = function (x, y, w, h, new_t, old_t, factor) {
                         var halfw = w * 0.5, halfh = h * 0.5;
                         x -= halfw;
@@ -355,7 +373,7 @@ var Engine = (function () {
                         else
                             return old_t;
                     };
-                else if (effect === 'circleout')
+                else if (effect === "circleout")
                     this.transition = function (x, y, w, h, new_t, old_t, factor) {
                         var halfw = w * 0.5, halfh = h * 0.5;
                         x -= halfw;
@@ -366,7 +384,7 @@ var Engine = (function () {
                         else
                             return old_t;
                     };
-                else if (effect === 'random')
+                else if (effect === "random")
                     this.transition = function (x, y, w, h, new_t, old_t, factor) {
                         if (Math.random() > factor)
                             return old_t;
@@ -375,7 +393,7 @@ var Engine = (function () {
                     };
             }
             if (this.transition) {
-                this.transitionTimer = (new Date()).getTime();
+                this.transitionTimer = new Date().getTime();
                 this.transitionDuration = duration || 500;
             }
         }
@@ -387,14 +405,18 @@ var Engine = (function () {
     ///
     /// Parameters:
     ///   func - function taking parameters (x, y) and returning a true if the tile is visible
-    Engine.prototype.setMaskFunc = function (func) { this.maskFunc = func; };
+    Engine.prototype.setMaskFunc = function (func) {
+        this.maskFunc = func;
+    };
     /// Function: setShaderFunc
     /// Sets the function to be called to post-process / shade each visible tile.
     /// Shader function is called even if caching is enabled, see <Engine.setCacheEnabled>.
     ///
     /// Parameters:
     ///   func - function taking parameters (tile, x, y) and returning an ut.Tile
-    Engine.prototype.setShaderFunc = function (func) { this.shaderFunc = func; };
+    Engine.prototype.setShaderFunc = function (func) {
+        this.shaderFunc = func;
+    };
     /// Function: setWorldSize
     /// Tiles outside of the range x = [0,width[ y = [0,height[ are not fetched.
     /// Set to undefined in order to make the world infinite.
@@ -441,7 +463,7 @@ var Engine = (function () {
         // World coords of upper left corner of the viewport
         var xx = x - this.viewport.cx;
         var yy = y - this.viewport.cy;
-        var timeNow = (new Date()).getTime(); // For passing to shaderFunc
+        var timeNow = new Date().getTime(); // For passing to shaderFunc
         var transTime;
         if (this.transition && this.transitionTimer)
             transTime = (timeNow - this.transitionTimer) / this.transitionDuration;
@@ -454,34 +476,42 @@ var Engine = (function () {
                 var ixx = i + xx, jyy = j + yy;
                 // Check horizontal bounds if requested
                 if (this.w && (ixx < 0 || ixx >= this.w)) {
-                    tile = NULLTILE;
+                    tile = exports.NULLTILE;
+                    // Check vertical bounds if requested
                 }
-                else if (this.h && (jyy < 0 || jyy >= this.w)) {
-                    tile = NULLTILE;
+                else if (this.h && (jyy < 0 || jyy >= this.h)) {
+                    tile = exports.NULLTILE;
+                    // Check mask
                 }
                 else if (this.maskFunc && !this.maskFunc(ixx, jyy)) {
-                    tile = NULLTILE;
+                    tile = exports.NULLTILE;
+                    // Check transition effect
                 }
                 else if (this.transition && !this.refreshCache) {
                     tile = this.transition(i, j, this.viewport.w, this.viewport.h, this.tileFunc(ixx, jyy), this.tileCache[j][i], transTime || 0);
+                    // Check cache
                 }
                 else if (this.cacheEnabled && !this.refreshCache) {
                     var lookupx = ixx - this.cachex;
                     var lookupy = jyy - this.cachey;
-                    if (lookupx >= 0 && lookupx < this.viewport.w && lookupy >= 0 && lookupy < this.viewport.h) {
+                    if (lookupx >= 0 &&
+                        lookupx < this.viewport.w &&
+                        lookupy >= 0 &&
+                        lookupy < this.viewport.h) {
                         tile = this.tileCache[lookupy][lookupx];
-                        if (tile === NULLTILE)
+                        if (tile === exports.NULLTILE)
                             tile = this.tileFunc(ixx, jyy);
-                    }
+                    } // Cache miss
                     else
                         tile = this.tileFunc(ixx, jyy);
+                    // If all else fails, call tileFunc
                 }
                 else
                     tile = this.tileFunc(ixx, jyy);
                 // Save the tile to cache (always due to transition effects)
                 this.tileCache2[j][i] = tile;
                 // Apply shader function
-                if (this.shaderFunc && tile !== NULLTILE)
+                if (this.shaderFunc && tile !== exports.NULLTILE)
                     tile = this.shaderFunc(tile, ixx, jyy, timeNow);
                 // Put shaded tile to viewport
                 this.viewport.unsafePut(tile, i, j);
@@ -499,3 +529,4 @@ var Engine = (function () {
     };
     return Engine;
 }());
+exports.Engine = Engine;
